@@ -195,12 +195,12 @@ function handleRememberUser(userId) {
 // - Elimine los posts guardados en localStorage (usando la clave POSTS_DATA_KEY).
 
 clearResultsBtn.addEventListener("click", () => {
-  // Vaciar lista 
-  postsList.innerHTML = "";
+    // Vaciar lista 
+    postsList.innerHTML = "";
 
-  // eliminar datos de localStorage 
-  localStorage.removeItem(POSTS_DATA_KEY);
+    // eliminar datos de localStorage 
+    localStorage.removeItem(POSTS_DATA_KEY);
 
-  // Restablecer mensaje
-  statusArea.innerHTML = '<p class="status-message">Aun no se ha hecho ninguna peticion.</p>';
+    // Restablecer mensaje
+    statusArea.innerHTML = '<p class="status-message">Aun no se ha hecho ninguna peticion.</p>';
 });
