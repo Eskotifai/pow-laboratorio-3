@@ -29,14 +29,14 @@ const POSTS_DATA_KEY = "lab_fetch_posts_data";
 
 // Al cargar la pagina (usando DOMContentLoaded)
 window.addEventListener("DOMContentLoaded", () => {
-  // a) Cargar el ultimo userId
+  // Cargar el ultimo userId
   const lastUserId = localStorage.getItem(LAST_USER_ID_KEY);
   if (lastUserId) {
     userIdInput.value = lastUserId; // Colocarlo en el input
     rememberUserCheckbox.checked = true; // Marcar el checkbox
   }
 
-  // b) Cargar las publicaciones guardadas
+  // Cargar las publicaciones guardadas
   const savedPosts = localStorage.getItem(POSTS_DATA_KEY);
   if (savedPosts) {
     try {
@@ -71,7 +71,7 @@ postForm.addEventListener("submit", (event) => {
 
   // Validar que sea entre 1 y 10
   if (isNaN(userId) || userId < 1 || userId > 10) {
-    // Si no es válido, mostrar error y detener ejecución
+    // Si no es valido, mostrar error
     statusArea.innerHTML = '<p class="status-message status-message--error">Error: Por favor ingresa un numero entre 1 y 10.</p>';
     return;
   }
