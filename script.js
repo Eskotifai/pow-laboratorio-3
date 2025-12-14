@@ -29,29 +29,29 @@ const POSTS_DATA_KEY = "lab_fetch_posts_data";
 
 // Al cargar la pagina (usando DOMContentLoaded)
 window.addEventListener("DOMContentLoaded", () => {
-  // Cargar el ultimo userId
-  const lastUserId = localStorage.getItem(LAST_USER_ID_KEY);
-  if (lastUserId) {
-    userIdInput.value = lastUserId; // Colocarlo en el input
-    rememberUserCheckbox.checked = true; // Marcar el checkbox
-  }
-
-  // Cargar las publicaciones guardadas
-  const savedPosts = localStorage.getItem(POSTS_DATA_KEY);
-  if (savedPosts) {
-    try {
-      // Convertir de JSON string a arreglo
-      const posts = JSON.parse(savedPosts);
-      // Mostrar las publicaciones 
-      renderPosts(posts);
-      // Actualizar estado indicando carga desde localStorage 
-      statusArea.innerHTML = '<p class="status-message status-message--success">Publicaciones cargadas desde memoria local.</p>';
-    } catch (error) {
-      // Si hay error al parsear, eliminar dato corrupto 
-      console.error("Error al leer localStorage:", error);
-      localStorage.removeItem(POSTS_DATA_KEY);
+    // Cargar el ultimo userId
+    const lastUserId = localStorage.getItem(LAST_USER_ID_KEY);
+    if (lastUserId) {
+        userIdInput.value = lastUserId; // Colocarlo en el input
+        rememberUserCheckbox.checked = true; // Marcar el checkbox
     }
-  }
+
+    // Cargar las publicaciones guardadas
+    const savedPosts = localStorage.getItem(POSTS_DATA_KEY);
+    if (savedPosts) {
+        try {
+            // Convertir de JSON string a arreglo
+            const posts = JSON.parse(savedPosts);
+            // mostrar las publicaciones 
+            renderPosts(posts);
+            // actualizar estado indicando carga desde localStorage 
+            statusArea.innerHTML = '<p class="status-message status-message--success">Publicaciones cargadas desde memoria local.</p>';
+        } catch (error) {
+            // Si hay error al parsear, eliminar
+            console.error("Error al leer localStorage:", error);
+            localStorage.removeItem(POSTS_DATA_KEY);
+        }
+    }
 });
 
 // TODO 2:
@@ -63,24 +63,24 @@ window.addEventListener("DOMContentLoaded", () => {
 // - Llamar a una función que haga la petición fetch a la API.
 
 postForm.addEventListener("submit", (event) => {
-  // Prevenir comportamiento por defecto 
-  event.preventDefault();
+    // prevenir comportamiento por defecto 
+    event.preventDefault();
 
-  // Obtener valor numerico 
-  const userId = parseInt(userIdInput.value);
+    // Obtener valor numerico 
+    const userId = parseInt(userIdInput.value);
 
-  // Validar que sea entre 1 y 10
-  if (isNaN(userId) || userId < 1 || userId > 10) {
-    // Si no es valido, mostrar error
-    statusArea.innerHTML = '<p class="status-message status-message--error">Error: Por favor ingresa un numero entre 1 y 10.</p>';
-    return;
-  }
+    // Validar que sea entre 1 y 10
+    if (isNaN(userId) || userId < 1 || userId > 10) {
+        // Si no es valido, mostrar error
+        statusArea.innerHTML = '<p class="status-message status-message--error">Error: Por favor ingresa un numero entre 1 y 10.</p>';
+        return;
+    }
 
-  // Si es valido, actualizar a "Cargando"
-  statusArea.innerHTML = '<p class="status-message status-message--loading">Cargando</p>';
+    // si es valido, actualizar a "Cargando"
+    statusArea.innerHTML = '<p class="status-message status-message--loading">Cargando</p>';
 
-  // Llamar a la funcion fetch 
-  fetchPostsByUser(userId);
+    // Llamar a la funcion fetch 
+    fetchPostsByUser(userId);
 });
 
 // TODO 3:
@@ -94,34 +94,34 @@ postForm.addEventListener("submit", (event) => {
 // - Maneje errores (try/catch) y muestre mensaje de error en statusArea.
 
 async function fetchPostsByUser(userId) {
-  // Construir la URL 
-  const url = `https://jsonplaceholder.typicode.com/posts?userId=${userId}`;
+    // Construir la URL 
+    const url = `https://jsonplaceholder.typicode.com/posts?userId=${userId}`;
 
-  try {
-    // Hacer peticion GET 
-    const response = await fetch(url);
+    try {
+        // get de la peticion
+        const response = await fetch(url);
 
-    // Verificar response.ok
-    if (!response.ok) {
-      throw new Error(`Error en la peticion: ${response.status}`);
+        // Verificar response.ok
+        if (!response.ok) {
+            throw new Error(`Error en peticion: ${response.status}`);
+        }
+
+        // Convertir respuesta a JSON 
+        const data = await response.json();
+
+        // actualizar area de estado a exito 
+        statusArea.innerHTML = '<p class="status-message status-message--success">Exito!11!!1</p>';
+
+        // Mostrar resultados en la lista 
+        renderPosts(data);
+
+        // guardar o limpiar userId tras exito
+        handleRememberUser(userId);
+
+        } catch (error) {
+            // Manejo de errores 
+            statusArea.innerHTML = `<p class="status-message status-message--error">Error de conexion: ${error.message}</p>`;
     }
-
-    // Convertir respuesta a JSON 
-    const data = await response.json();
-
-    // Actualizar area de estado a exito 
-    statusArea.innerHTML = '<p class="status-message status-message--success">Exito!11!!1</p>';
-
-    // Mostrar resultados en la lista 
-    renderPosts(data);
-
-    // Gestionar TODO 5 aqui (guardar/limpiar userId tras exito)
-    handleRememberUser(userId);
-
-  } catch (error) {
-    // Manejo de errores 
-    statusArea.innerHTML = `<p class="status-message status-message--error">Error de conexion: ${error.message}</p>`;
-  }
 }
 
 // TODO 4:
@@ -134,50 +134,58 @@ async function fetchPostsByUser(userId) {
 //   Recuerda que localStorage solo guarda strings, así que usa JSON.stringify() para convertir el arreglo.
 
 function renderPosts(posts) {
-  // Vaciar contenido previo 
-  postsList.innerHTML = "";
 
-  // Recorrer el arreglo de posts 
-  posts.forEach((post) => {
-    // Crear li con clase "post-item" 
-    const li = document.createElement("li");
-    li.className = "post-item";
+    // Por si posts no es un arreglo
+    if (!posts || !Array.isArray(posts)) {
+        console.error("Error: renderPosts esperaba un arreglo:", posts);
+        statusArea.innerHTML = '<p class="status-message status-message--error">Error: Datos con formato correcto.</p>';
+        return; 
+    } 
 
-    // Crear titulo y cuerpo 
-    const title = document.createElement("h3");
-    title.className = "post-title";
-    title.textContent = post.title;
+    // Vaciar contenido
+    postsList.innerHTML = "";
 
-    const body = document.createElement("p");
-    body.className = "post-body";
-    body.textContent = post.body;
+    // Recorrer el arreglo de posts 
+    posts.forEach((post) => {
+        // crear li con clase "post-item" 
+        const li = document.createElement("li");
+        li.className = "post-item";
 
-    // Insertar titulo y cuerpo en el li 
-    li.appendChild(title);
-    li.appendChild(body);
+        // crear titulo y cuerpo 
+        const title = document.createElement("h3");
+        title.className = "post-title";
+        title.textContent = post.title;
 
-    // Agregar li a la lista 
-    postsList.appendChild(li);
-  });
+        const body = document.createElement("p");
+        body.className = "post-body";
+        body.textContent = post.body;
 
-  // Guardar posts en localStorage 
-  // Convertir a JSON string 
-  localStorage.setItem(POSTS_DATA_KEY, JSON.stringify(posts));
-}
+        // Insertar titulo y cuerpo en el li 
+        li.appendChild(title);
+        li.appendChild(body);
+
+        // agregar li a la lista 
+        postsList.appendChild(li);
+    });
+
+        // Guardar posts en localStorage 
+        // convertir a JSON string 
+        localStorage.setItem(POSTS_DATA_KEY, JSON.stringify(posts));
+    }
 
 // TODO 5:
 // Si el checkbox "rememberUser" esta marcado cuando se hace una consulta
 // exitosa, guardar el userId en localStorage. Si no, limpiar ese valor.
 
 function handleRememberUser(userId) {
-  // Si el checkbox esta marcado 
-  if (rememberUserCheckbox.checked) {
-    // Guardar userId 
-    localStorage.setItem(LAST_USER_ID_KEY, userId);
-  } else {
-    // Si no esta marcado, eliminar valor 
-    localStorage.removeItem(LAST_USER_ID_KEY);
-  }
+    // si el checkbox esta marcado 
+    if (rememberUserCheckbox.checked) {
+        // Guardar userId 
+        localStorage.setItem(LAST_USER_ID_KEY, userId);
+    } else {
+        // eliminar si no esta marcado 
+        localStorage.removeItem(LAST_USER_ID_KEY);
+    }
 }
 
 // TODO 6:
@@ -187,12 +195,12 @@ function handleRememberUser(userId) {
 // - Elimine los posts guardados en localStorage (usando la clave POSTS_DATA_KEY).
 
 clearResultsBtn.addEventListener("click", () => {
-  // Vaciar lista visual 
+  // Vaciar lista 
   postsList.innerHTML = "";
 
-  // Eliminar datos de localStorage 
+  // eliminar datos de localStorage 
   localStorage.removeItem(POSTS_DATA_KEY);
 
-  // Restablecer mensaje de estado 
+  // Restablecer mensaje
   statusArea.innerHTML = '<p class="status-message">Aun no se ha hecho ninguna peticion.</p>';
 });
