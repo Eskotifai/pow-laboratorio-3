@@ -138,7 +138,7 @@ function renderPosts(posts) {
     // Por si posts no es un arreglo
     if (!posts || !Array.isArray(posts)) {
         console.error("Error: renderPosts esperaba un arreglo:", posts);
-        statusArea.innerHTML = '<p class="status-message status-message--error">Error: Datos con formato correcto.</p>';
+        statusArea.innerHTML = '<p class="status-message status-message--error">Error: Datos con formato incorrecto.</p>';
         return; 
     } 
 
